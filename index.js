@@ -126,7 +126,7 @@ async function run() {
             res.send({ result, token });
         });
 
-
+        //get all booking data
         app.get('/bookings', async (req, res) => {
             const query = {};
             const cursor = bookingCollection.find(query);
