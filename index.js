@@ -3,6 +3,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const { ObjectID } = require('bson');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -44,15 +45,30 @@ async function run() {
             res.send(services);
         });
 
-        //  app.get('/booking', async(req, res) =>{
-        //      const query = {};
-        //      const cursor = bookingCollection.find(query);
-        //      const bookings = await cursor.toArray();
-        //      res.send(bookings) 
-        //  })
+        app.delete('/service/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectID(id)};
+            const result = await serviceCollection.deleteOne(query);
+            res.send(result);
+        });
+
+        // app.delete('/server/:email',  async (req, res) => {
+        //     const email = req.params.email;
+        //     const filter = { email: email };
+        //     const result = await serviceCollection.deleteOne(filter);
+        //     res.send(result);
+        //   });
+
+        // //DELETE
+        // app.delete('/service/:id', async(req, res)=>{
+        //     const id = req.params.id;
+        //     const query = {_id: ObjectId(id)};
+        //     const result = await serviceCollection.deleteOne(query);
+        //     res.send(result);
+        // });
 
 
-        app.get('/user',verifyJWT, async(req, res)=>{
+        app.get('/user', async(req, res)=>{
             const users = await userCollection.find().toArray();
             res.send(users);
         });
@@ -96,6 +112,15 @@ async function run() {
             const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
             res.send({ result, token });
         });
+
+
+        app.get('/booking', async(req, res) =>{
+            const query = {};
+            const cursor = bookingCollection.find(query);
+            const bookings = await cursor.toArray();
+            res.send(bookings) 
+        });
+
 
 
         app.get('/booking', async (req, res) => {
