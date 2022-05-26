@@ -39,6 +39,7 @@ async function run() {
         const bookingCollection = client.db('ac_collection').collection('bookings')
         const userCollection = client.db('ac_collection').collection('users');
         const paymentCollection = client.db('ac_collection').collection('payments');
+        const reviewCollection = client.db('ac_collection').collection('reviews');
 
         app.get('/service', async (req, res) => {
             const query = {};
@@ -62,21 +63,21 @@ async function run() {
         });
 
 
+        //GET Review 
+        app.get('/review', async (req, res) => {
+            const query = {};
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
 
-        // app.delete('/server/:email',  async (req, res) => {
-        //     const email = req.params.email;
-        //     const filter = { email: email };
-        //     const result = await serviceCollection.deleteOne(filter);
-        //     res.send(result);
-        //   });
+        //POST Review
+        app.post('/review', async(req,res)=>{
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
+        })
 
-        // //DELETE
-        // app.delete('/service/:id', async(req, res)=>{
-        //     const id = req.params.id;
-        //     const query = {_id: ObjectId(id)};
-        //     const result = await serviceCollection.deleteOne(query);
-        //     res.send(result);
-        // });
 
 
         app.get('/user', async(req, res)=>{
