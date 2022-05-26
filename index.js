@@ -3,7 +3,8 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const { ObjectID } = require('bson');
+const { ObjectId } = require('bson');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -36,7 +37,8 @@ async function run() {
         await client.connect();
         const serviceCollection = client.db('ac_collection').collection('services')
         const bookingCollection = client.db('ac_collection').collection('bookings')
-        const userCollection = client.db('ac_collection').collection('users')
+        const userCollection = client.db('ac_collection').collection('users');
+        const paymentCollection = client.db('ac_collection').collection('payments');
 
         app.get('/service', async (req, res) => {
             const query = {};
@@ -45,12 +47,21 @@ async function run() {
             res.send(services);
         });
 
+        //POST
+        app.post('/service', async(req, res)=>{
+            const newService = req.body;
+            const result = await serviceCollection.insertOne(newService);
+            res.send(result);
+        })
+
         app.delete('/service/:id', async(req,res)=>{
             const id = req.params.id;
             const query = {_id: ObjectID(id)};
             const result = await serviceCollection.deleteOne(query);
             res.send(result);
         });
+
+
 
         // app.delete('/server/:email',  async (req, res) => {
         //     const email = req.params.email;
@@ -114,13 +125,20 @@ async function run() {
         });
 
 
-        app.get('/booking', async(req, res) =>{
+        app.get('/bookings', async(req, res) =>{
             const query = {};
             const cursor = bookingCollection.find(query);
             const bookings = await cursor.toArray();
             res.send(bookings) 
         });
 
+
+        app.get('/booking/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const booking = await bookingCollection.findOne(query);
+            res.send(booking);
+        })
 
 
         app.get('/booking', async (req, res) => {
