@@ -79,21 +79,6 @@ async function run() {
         })
 
 
-        // app.delete('/server/:email',  async (req, res) => {
-        //     const email = req.params.email;
-        //     const filter = { email: email };
-        //     const result = await serviceCollection.deleteOne(filter);
-        //     res.send(result);
-        //   });
-
-        // //DELETE
-        // app.delete('/service/:id', async(req, res)=>{
-        //     const id = req.params.id;
-        //     const query = {_id: ObjectId(id)};
-        //     const result = await serviceCollection.deleteOne(query);
-        //     res.send(result);
-        // });
-
 
         app.get('/user', async(req, res)=>{
             const users = await userCollection.find().toArray();
