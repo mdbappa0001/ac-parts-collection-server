@@ -49,15 +49,15 @@ async function run() {
         });
 
         //POST
-        app.post('/service', async(req, res)=>{
+        app.post('/service', async (req, res) => {
             const newService = req.body;
             const result = await serviceCollection.insertOne(newService);
             res.send(result);
         })
 
-        app.delete('/service/:id', async(req,res)=>{
+        app.delete('/service/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectID(id)};
+            const query = { _id: ObjectID(id) };
             const result = await serviceCollection.deleteOne(query);
             res.send(result);
         });
@@ -72,42 +72,42 @@ async function run() {
         });
 
         //POST Review
-        app.post('/review', async(req,res)=>{
+        app.post('/review', async (req, res) => {
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
             res.send(result);
         })
 
 
-
-        app.get('/user', async(req, res)=>{
+        // For get user
+        app.get('/user', async (req, res) => {
             const users = await userCollection.find().toArray();
             res.send(users);
         });
 
-
-        app.get('/admin/:email', async(req,res)=>{
+        //For Admin Role
+        app.get('/admin/:email', async (req, res) => {
             const email = req.params.email;
-            const user = await userCollection.findOne({email: email});
+            const user = await userCollection.findOne({ email: email });
             const isAdmin = user.role === 'admin';
-            res.send({admin: isAdmin})
+            res.send({ admin: isAdmin })
         });
 
 
-        app.put('/user/admin/:email',verifyJWT, async (req, res) => {
+        app.put('/user/admin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const requester = req.decoded.email;
-            const requesterAccount = await userCollection.findOne({email: requester});
-            if(requesterAccount.role === 'admin'){
+            const requesterAccount = await userCollection.findOne({ email: requester });
+            if (requesterAccount.role === 'admin') {
                 const filter = { email: email };
                 const updateDoc = {
-                    $set: {role: 'admin'},
+                    $set: { role: 'admin' },
                 };
                 const result = await userCollection.updateOne(filter, updateDoc);
                 res.send(result);
             }
-            else{
-                res.status(403).send({message: 'forbidden'});
+            else {
+                res.status(403).send({ message: 'forbidden' });
             }
         });
 
@@ -126,17 +126,17 @@ async function run() {
         });
 
 
-        app.get('/bookings', async(req, res) =>{
+        app.get('/bookings', async (req, res) => {
             const query = {};
             const cursor = bookingCollection.find(query);
             const bookings = await cursor.toArray();
-            res.send(bookings) 
+            res.send(bookings)
         });
 
 
-        app.get('/booking/:id', async(req,res)=>{
+        app.get('/booking/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const booking = await bookingCollection.findOne(query);
             res.send(booking);
         })
